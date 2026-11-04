@@ -93,7 +93,7 @@
       btn.id = '__cartLabelBtn';
       btn.title = '將病人清單轉成藥車標籤：有勾選只帶勾選的病人；否則有反白只帶反白範圍；都沒有則帶全部';
       btn.style.cssText = 'position:fixed;right:16px;bottom:64px;z-index:2147483647;padding:8px 14px;' +
-        'border:0;border-radius:8px;background:#1b55ce;color:#fff;font:bold 14px "Microsoft JhengHei",sans-serif;' +
+        'border:0;border-radius:8px;background:#c15f3c;color:#fff;font:bold 14px "Microsoft JhengHei",sans-serif;' +
         'box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;max-width:360px;text-align:left;';
       (document.body || document.documentElement).appendChild(btn);
     }

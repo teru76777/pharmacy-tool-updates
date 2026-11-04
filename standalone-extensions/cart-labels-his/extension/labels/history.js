@@ -7,10 +7,15 @@ function taiwanDay(now=new Date()){
  return `${p.year}-${p.month}-${p.day}`;
 }
 function dayAge(day,today=taiwanDay()){return (Date.parse(today+'T00:00:00Z')-Date.parse(day+'T00:00:00Z'))/DAY_MS;}
+// 記憶只存病歷號：標籤第三行為「病歷號 生日」時只取第一段（帳號版標籤為帳號）；不存姓名、生日
+function chartId(value){
+ const t=(String(value||'').trim().toUpperCase().split(/\s+/)[0])||'';
+ return t.length>=6&&!/^\d{4}[\/.-]\d{1,2}[\/.-]\d{1,2}$/.test(t)?t:'';
+}
 function labelIdentity(text){
  const lines=text.split('\n'),parts=(lines[0]||'').split('  ');
- const ward=parts.shift().trim(),bed=parts.join('  ').trim(),account=(lines[2]||'').trim().toUpperCase();
- return ward&&bed&&account.length>=6?{ward,bed,account}:null;
+ const ward=parts.shift().trim(),bed=parts.join('  ').trim(),account=chartId(lines[2]);
+ return ward&&bed&&account?{ward,bed,account}:null;
 }
 function identityKey(value){return JSON.stringify([wardKey(value.ward),bedKey(value.bed),value.account]);}
 function retainedHistory(rows,today=taiwanDay()){
@@ -19,13 +24,13 @@ function retainedHistory(rows,today=taiwanDay()){
   if(!r||typeof r.ward!=='string'||typeof r.bed!=='string'||typeof r.day!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(r.day)||!(dayAge(r.day,today)>=0&&dayAge(r.day,today)<KEEP_DAYS))return [];
   const base={ward:r.ward,bed:r.bed,day:r.day};
   if(r.vacant===true)return [{...base,vacant:true}]; // 空床：只記病房、床號、日期
-  if(typeof r.account==='string'&&r.account.trim().length>=6)return [{...base,account:r.account.trim().toUpperCase()}];
-  // Legacy suffix-only records expire normally but cannot identify a full account.
-  return typeof r.suffix==='string'&&r.suffix.length===5?[{...base,suffix:r.suffix}]:[];
+  // 舊紀錄的「病歷號 生日」自動去掉生日；舊版末五碼紀錄無法比對，直接移除
+  const account=typeof r.account==='string'?chartId(r.account):'';
+  return account?[{...base,account}]:[];
  });
 }
 function readHistory(){
- try{const raw=localStorage.getItem(HISTORY_KEY);let parsed;try{parsed=JSON.parse(raw||'[]');}catch{parsed=[];}const rows=retainedHistory(parsed);if(raw!==JSON.stringify(rows))localStorage.setItem(HISTORY_KEY,JSON.stringify(rows));historyAvailable=true;return rows;}catch{historyAvailable=false;return [];}
+ try{const raw=localStorage.getItem(HISTORY_KEY);let parsed;try{parsed=JSON.parse(raw||'[]');}catch{parsed=[];}const rows=retainedHistory(parsed);if(raw!==JSON.stringify(rows)){localStorage.setItem(HISTORY_KEY,JSON.stringify(rows));if(raw&&typeof memoryFileChanged==='function')memoryFileChanged();}historyAvailable=true;return rows;}catch{historyAvailable=false;return [];}
 }
 // 比對日＝今天以前「前前一次」有列印的日期（兩台藥車依列印輪流；週末、連假沒印的日子不算）
 function printDays(history,today=taiwanDay()){
@@ -89,7 +94,7 @@ function chooseVacantRepeats(repeats){
 }
 function updateMemoryStatus(){
  const rows=readHistory(),today=taiwanDay(),comparison=comparisonHistory(rows,today);
- $('memoryStatus').textContent=historyAvailable?(()=>{const days=printDays(rows,today),day=days[1];return day?`比對前前次列印（${day}${dayAge(day,today)!==2?'，'+dayAge(day,today)+' 天前':''}）：病人 ${comparison.length} 筆、空床 ${comparisonVacancies(rows,today).size} 床。`:`今天以前${days.length?'只有 1 天（'+days[0]+'）':'沒有'}列印紀錄，需有兩次不同日期的列印才會比對，本次不提醒重複、轉床或空床。`;})()+(rows.some(r=>!r.account&&!r.vacant)?' 舊版末五碼紀錄不參與比對，滿 14 天自動清除。':''):'此瀏覽器無法儲存記憶；仍可列印，但無法提醒過去已印的標籤。';
+ $('memoryStatus').textContent=historyAvailable?(()=>{const days=printDays(rows,today),day=days[1];return day?`比對前前次列印（${day}${dayAge(day,today)!==2?'，'+dayAge(day,today)+' 天前':''}）：病人 ${comparison.length} 筆、空床 ${comparisonVacancies(rows,today).size} 床。`:`今天以前${days.length?'只有 1 天（'+days[0]+'）':'沒有'}列印紀錄，需有兩次不同日期的列印才會比對，本次不提醒重複、轉床或空床。`;})():'此瀏覽器無法儲存記憶；仍可列印，但無法提醒過去已印的標籤。';
  return rows;
 }
 function findDuplicates(texts,history,today=taiwanDay()){
@@ -100,7 +105,7 @@ function chooseDuplicates(duplicates,total){
  return new Promise(resolve=>{
   const dialog=$('duplicateDialog');$('duplicateList').replaceChildren();
   $('duplicateSummary').textContent=`本次 ${total} 張病人標籤中，有 ${duplicates.length} 張與前前次列印（${comparisonDay(readHistory())}）相同。`;
-  const choices=duplicates.map(d=>{const row=document.createElement('label');row.className='duplicate-row';const check=document.createElement('input');check.type='checkbox';check.checked=true;const text=document.createElement('span');text.textContent=`${d.ward}　${d.bed}　帳號 ${d.account}`;row.append(check,text);$('duplicateList').append(row);return {index:d.index,check};});
+  const choices=duplicates.map(d=>{const row=document.createElement('label');row.className='duplicate-row';const check=document.createElement('input');check.type='checkbox';check.checked=true;const text=document.createElement('span');text.textContent=`${d.ward}　${d.bed}　病歷號 ${d.account}`;row.append(check,text);$('duplicateList').append(row);return {index:d.index,check};});
   const finish=value=>{dialog.oncancel=null;dialog.close();resolve(value);};
   $('duplicateCancel').onclick=()=>finish(null);$('duplicateSkip').onclick=()=>finish(new Set(duplicates.map(d=>d.index)));$('duplicateContinue').onclick=()=>finish(new Set(choices.filter(c=>!c.check.checked).map(c=>c.index)));dialog.oncancel=e=>{e.preventDefault();finish(null);};dialog.showModal();
  });
@@ -118,7 +123,7 @@ function confirmTransfers(transfers){
   $('transferSummary').textContent=`${transfers.length} 張標籤的床位與前前次列印的紀錄不同，請確認轉床資料。`;
   for(const t of transfers){
    const row=document.createElement('div');row.className='transfer-row';
-   const account=document.createElement('strong');account.textContent=`帳號 ${t.account}`;
+   const account=document.createElement('strong');account.textContent=`病歷號 ${t.account}`;
    const route=document.createElement('div');route.textContent=`${t.previous.ward}　${t.previous.bed} → ${t.ward}　${t.bed}`;
    const date=document.createElement('small');date.textContent=`前前次列印紀錄：${t.previous.day}`;
    row.append(account,route,date);$('transferList').append(row);
@@ -130,7 +135,7 @@ function confirmTransfers(transfers){
 }
 function clearPrintHistory(){
  if(printBusy)return;
- try{localStorage.removeItem(HISTORY_KEY);historyAvailable=true;updateMemoryStatus();$('status').textContent='已清除所有列印記憶，字體與字級設定保留。';}
+ try{localStorage.removeItem(HISTORY_KEY);historyAvailable=true;updateMemoryStatus();$('status').textContent='已清除所有列印記憶，字體與字級設定保留。';if(typeof memorySync==='function')memorySync({write:true,pull:false,gesture:true}).then(r=>{if(r?.wrote)$('status').textContent+=' 列印記憶.txt 已一併清空。';});}
  catch{$('status').textContent='無法清除列印記憶，請再試一次。';}
  $('clearMemoryDialog').close();
 }
@@ -141,6 +146,7 @@ async function beginRememberedPrint(){
  if(printBusy||$('print').disabled)return;
  printBusy=true;
  try{
+  if(typeof memorySync==='function')await memorySync({gesture:true}); // 先套用 列印記憶.txt 的手動修改
   const sourceSnapshot=[...records],history=updateMemoryStatus(),today=taiwanDay();
   const transfers=findTransfers(sourceSnapshot,history,today);
   if(transfers.length&&!await confirmTransfers(transfers)){printBusy=false;return;}
@@ -172,10 +178,12 @@ window.addEventListener('afterprint',()=>{
  printJob.prompted=true;
  setTimeout(()=>{if(!printJob)return;$('completeSummary').textContent=`本次列印 ${printJob.count} 張病人標籤、${printJob.vacancies} 張空床標籤${printJob.dropped?`（另有 ${printJob.dropped} 個前前次也是空床的床位未印）`:''}。空床只記錄病房與床號。`;$('completeDialog').showModal();},0);
 });
-function finishRememberedPrint(completed){
- const job=printJob;if(!job)return;
- let saved=false;
+async function finishRememberedPrint(completed){
+ const job=printJob;if(!job||job.finishing)return;
+ job.finishing=true;
+ let saved=false,fileNote='';
  if(completed){
+  if(typeof memorySync==='function')await memorySync({gesture:true}); // 先讀回 TXT 的修改，再加入本次紀錄
   const rows=readHistory();
   if(historyAvailable)try{
    const merged=new Map(rows.map(r=>[r.vacant?r.day+'|V|'+vacantKey(r.ward,r.bed):r.account?r.day+'|'+r.account:'legacy|'+JSON.stringify(r),r]));
@@ -183,9 +191,11 @@ function finishRememberedPrint(completed){
    for(const v of job.vacantBeds||[]){const entry={ward:v.ward,bed:v.bed,day:job.day,vacant:true};merged.set(entry.day+'|V|'+vacantKey(v.ward,v.bed),entry);}
    localStorage.setItem(HISTORY_KEY,JSON.stringify(retainedHistory([...merged.values()])));saved=true;
   }catch{historyAvailable=false;}
+  if(saved&&typeof memorySync==='function'){const r=await memorySync({write:true,pull:false,gesture:true});fileNote=r?.wrote?' 已更新 列印記憶.txt。':r?.linked?(typeof memBlocked!=='undefined'&&memBlocked?' 列印記憶.txt 有格式錯誤，未更新（見 ⚙ 設定 → 列印記憶）。':' 列印記憶.txt 未更新（需要允許，見 ⚙ 設定 → 列印記憶）。'):'';}
  }
  $('completeDialog').close();printSelection=null;printOmitted=new Set();printJob=null;printBusy=false;render();updateMemoryStatus();
- $('status').textContent=completed?(saved?`已記錄本次列印（病人：病房、床號、完整帳號與日期；空床：病房、床號與日期）。${(job.patients??job.count)-job.identities.length?'部分標籤缺少完整識別資料，未記入記憶。':''}`:'已完成列印，但瀏覽器無法儲存紀錄。'):'本次未寫入列印記憶。';
+ $('status').textContent=completed?(saved?`已記錄本次列印（病人：病房、床號、病歷號與日期；空床：病房、床號與日期；不含姓名、生日）。${(job.patients??job.count)-job.identities.length?'部分標籤缺少病歷號，未記入記憶。':''}${fileNote}`:'已完成列印，但瀏覽器無法儲存紀錄。'):'本次未寫入列印記憶。';
+ if(saved&&typeof memTxtLink==='function')$('status').append(' ',memTxtLink());
 }
 $('completeYes').onclick=()=>finishRememberedPrint(true);$('completeNo').onclick=()=>finishRememberedPrint(false);$('completeDialog').oncancel=e=>{e.preventDefault();finishRememberedPrint(false);};
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')updateMemoryStatus();});

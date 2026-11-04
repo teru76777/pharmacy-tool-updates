@@ -74,3 +74,4 @@ chrome.storage.local.get([KEY, 'autoWards', 'pageScan']).then(v => {
 });
 scan.onchange = () => chrome.storage.local.set({ pageScan: scan.checked });
 document.getElementById('open').onclick = () => chrome.tabs.create({ url: chrome.runtime.getURL('labels/index.html') });
+document.getElementById('openMem').onclick = () => chrome.tabs.create({ url: chrome.runtime.getURL('labels/memory.html') });

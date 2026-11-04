@@ -1,9 +1,9 @@
 {
   "format": "cart-labels-his-release-v1",
   "toolId": "ntuh-cart-labels-his",
-  "version": "2.9.1",
-  "notes": "統一單字圖示「車」：工具列、標籤頁、彈出視窗及管理頁同步更新，原有功能與設定保留。",
-  "packagePath": "updates/cart-labels-his/packages/2.9.1.json",
-  "size": 447085,
-  "sha256": "83a46398a30a4d0208a81c3c116cf3a712f4217f175b7bd7d2daa2beeb1fd48a"
+  "version": "2.10.0",
+  "notes": "合併本機版功能：列印記憶只存日期、病房、床號、病歷號（不存姓名、生日）；可同步為本機「列印記憶.txt」並新增檢視頁；版面改為米白底與陶土色按鈕。沒有新增權限，原有資料、登記與設定保留。",
+  "packagePath": "updates/cart-labels-his/packages/2.10.0.json",
+  "size": 490747,
+  "sha256": "b742668e1f3eb8c4295e7c9cc8b3d918c006678aebc7a840c8614039b35a2eb5"
 }

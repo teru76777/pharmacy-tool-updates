@@ -170,21 +170,21 @@
 
   // ---------- 進度面板 ----------
   let panel = null;
-  const css = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;width:300px;background:#fff;border:1px solid #c9d4e5;border-radius:10px;' +
-    'box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px "Microsoft JhengHei",sans-serif;color:#172944;padding:12px 14px;';
+  const css = 'position:fixed;right:16px;bottom:16px;z-index:2147483647;width:300px;background:#fff;border:1px solid #d8d4c9;border-radius:10px;' +
+    'box-shadow:0 6px 24px rgba(0,0,0,.25);font:14px "Microsoft JhengHei",sans-serif;color:#1f1e1d;padding:12px 14px;';
   function showPanel(wards) {
     panel?.remove();
     panel = document.createElement('div');
     panel.style.cssText = css;
-    panel.innerHTML = '<div style="font-weight:bold;margin-bottom:8px;color:#1b55ce">▤ 自動抓取藥車標籤</div><div data-list></div>' +
-      '<div data-foot style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span data-msg style="font-size:12px;color:#5f7390">請勿操作此頁面</span>' +
-      '<button data-stop style="padding:5px 12px;border:1px solid #c9d4e5;border-radius:6px;background:#fff;cursor:pointer">停止</button></div>';
+    panel.innerHTML = '<div style="font-weight:bold;margin-bottom:8px;color:#c15f3c">▤ 自動抓取藥車標籤</div><div data-list></div>' +
+      '<div data-foot style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span data-msg style="font-size:12px;color:#6b6963">請勿操作此頁面</span>' +
+      '<button data-stop style="padding:5px 12px;border:1px solid #d8d4c9;border-radius:6px;background:#fff;cursor:pointer">停止</button></div>';
     const list = panel.querySelector('[data-list]');
     for (const w of wards) {
       const row = document.createElement('div');
       row.dataset.ward = w;
-      row.style.cssText = 'display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #eef2f7';
-      row.innerHTML = '<b></b><span style="font-size:13px;color:#7a8aa1">等待</span>';
+      row.style.cssText = 'display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0eee7';
+      row.innerHTML = '<b></b><span style="font-size:13px;color:#87857d">等待</span>';
       row.querySelector('b').textContent = w;
       list.append(row);
     }
@@ -195,7 +195,7 @@
     const span = panel?.querySelector(`[data-ward="${CSS.escape(ward)}"] span`);
     if (!span) return;
     span.textContent = text;
-    span.style.color = kind === 'ok' ? '#1d7a3a' : kind === 'err' ? '#b32929' : kind === 'warn' ? '#a35a00' : '#1b55ce';
+    span.style.color = kind === 'ok' ? '#1d7a3a' : kind === 'err' ? '#b32929' : kind === 'warn' ? '#a35a00' : '#c15f3c';
   }
   function panelDone(summary, error) {
     if (!panel) return;

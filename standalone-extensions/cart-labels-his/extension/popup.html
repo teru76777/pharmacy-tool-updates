@@ -1,28 +1,31 @@
 <!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8"><title>藥車標籤列印</title><link rel="icon" type="image/png" href="icons/icon-32.png">
 <style>
-  body { width: 320px; margin: 0; padding: 14px 16px 16px; font: 13px "Microsoft JhengHei", "Noto Sans TC", sans-serif; color: #172944; }
-  h1 { font-size: 15px; margin: 0 0 12px; color: #1b55ce; }
+  body { width: 320px; margin: 0; padding: 14px 16px 16px; font: 13px "Microsoft JhengHei", "Noto Sans TC", sans-serif; color: #1f1e1d; }
+  h1 { font-size: 15px; margin: 0 0 12px; color: #1f1e1d; }
+  html { background: #faf9f5; }
+  input[type=checkbox] { accent-color: #c15f3c; }
+  .mem-link { display: block; margin: 8px 0 2px; font-size: 13px; color: #a14f32; }
   .app-wordmark { display:inline-block; vertical-align:middle; margin-right:5px; }
-  h2 { font-size: 13px; margin: 0 0 8px; color: #31547f; }
-  section { border-top: 1px solid #e4eaf3; padding-top: 12px; margin-top: 12px; }
+  h2 { font-size: 13px; margin: 0 0 8px; color: #4d4c48; }
+  section { border-top: 1px solid #ebe8df; padding-top: 12px; margin-top: 12px; }
   button { font: inherit; cursor: pointer; border-radius: 6px; }
-  .primary { width: 100%; padding: 8px; border: 0; background: #1b55ce; color: #fff; font-weight: bold; }
+  .primary { width: 100%; padding: 8px; border: 0; background: #c15f3c; color: #fff; font-weight: bold; }
   .primary:disabled { opacity: .45; cursor: not-allowed; }
-  .combo { border: 1px solid #dce3ee; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+  .combo { border: 1px solid #e6e3d9; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
   .combo-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .combo-head input { flex: 1; min-width: 0; font: bold 13px inherit; border: 1px solid transparent; border-radius: 4px; padding: 3px 5px; color: #172944; }
-  .combo-head input:hover, .combo-head input:focus { border-color: #ccd6e5; }
-  .pen { color: #9aa8bb; font-size: 12px; margin-left: -4px; }
-  .wards { width: 100%; box-sizing: border-box; padding: 7px 8px; border: 1px solid #ccd6e5; border-radius: 5px; font: 14px Arial, sans-serif; text-transform: uppercase; }
+  .combo-head input { flex: 1; min-width: 0; font: bold 13px inherit; border: 1px solid transparent; border-radius: 4px; padding: 3px 5px; color: #1f1e1d; }
+  .combo-head input:hover, .combo-head input:focus { border-color: #d9d5ca; }
+  .pen { color: #a3a097; font-size: 12px; margin-left: -4px; }
+  .wards { width: 100%; box-sizing: border-box; padding: 7px 8px; border: 1px solid #d9d5ca; border-radius: 5px; font: 14px Arial, sans-serif; text-transform: uppercase; }
   .row { display: flex; gap: 6px; margin-top: 8px; }
   .row .primary { flex: 1; }
-  .link { border: 0; background: none; color: #1b55ce; padding: 0; font-size: 12px; }
-  .hint { margin: 6px 0 0; color: #5f7390; font-size: 12px; line-height: 1.55; }
+  .link { border: 0; background: none; color: #c15f3c; padding: 0; font-size: 12px; }
+  .hint { margin: 6px 0 0; color: #6b6963; font-size: 12px; line-height: 1.55; }
   .msg { margin: 6px 0 0; font-size: 12px; min-height: 1em; }
   .msg.err { color: #b32929; } .msg.ok { color: #1d7a3a; }
   label.chk { display: flex; gap: 6px; align-items: flex-start; font-weight: bold; cursor: pointer; }
-  .secondary { width: 100%; padding: 7px; border: 1px solid #ccd6e5; background: #fff; color: #25476f; }
+  .secondary { width: 100%; padding: 7px; border: 1px solid #d9d5ca; background: #fff; color: #3d3d3a; }
 </style><link rel="stylesheet" href="managed-ui.css"></head>
 <body><div id="managed-workspace" inert>
   <h1><img class="app-wordmark" src="icons/icon-48.png" width="28" height="28" alt="" aria-hidden="true"> 藥車標籤列印</h1>
@@ -33,6 +36,7 @@
 
   <section>
     <button id="open" class="secondary">開啟標籤工具</button>
+    <button id="openMem" class="link mem-link">📄 開啟 列印記憶.txt</button>
     <p class="hint"><b>手動：</b>在 HIS 勾選病人，按院內「列印病人標籤」，也會自動帶入。</p>
   </section>
 

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>列印記憶.txt｜藥車標籤</title>
+<link rel="icon" type="image/png" href="../icons/icon-32.png">
+<style>
+  :root { color: #1f1e1d; background: #f5f4ed; font: 15px Arial, "Microsoft JhengHei", sans-serif; }
+  body { margin: 0; }
+  header { background: #faf9f5; border-bottom: 1px solid #e6e3d9; padding: 14px 4%; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header img { width: 32px; height: 32px; }
+  h1 { font-size: 19px; margin: 0; flex: 1; min-width: 200px; }
+  button { font: inherit; font-size: 14px; background: #fff; border: 1px solid #d9d5ca; border-radius: 7px; padding: 8px 14px; cursor: pointer; color: #3d3d3a; }
+  button:hover { background: #f3efe6; }
+  .primary { background: #c15f3c; border-color: #c15f3c; color: #fff; font-weight: 700; }
+  .primary:hover { background: #a94f30; }
+  main { max-width: 900px; margin: 0 auto; padding: 22px 4% 40px; }
+  .source { background: #fff; border: 1px solid #e6e3d9; border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; line-height: 1.7; font-size: 14px; color: #4d4c48; }
+  .source strong { color: #1f1e1d; }
+  .source.warn { background: #fff7e6; border-color: #f5d48b; color: #6b4400; }
+  .source button { margin-top: 8px; }
+  .note { font-size: 13px; color: #6b6963; margin: 0 0 10px; }
+  pre { background: #fff; border: 1px solid #e6e3d9; border-radius: 12px; padding: 18px 20px; margin: 0; font: 14px/1.75 Consolas, "Noto Sans Mono", "Microsoft JhengHei", monospace; tab-size: 8; white-space: pre; overflow: auto; min-height: 200px; }
+</style><link rel="stylesheet" href="../managed-ui.css"></head>
+<body><div id="managed-workspace" inert>
+<header>
+  <img src="../icons/icon-48.png" alt="" aria-hidden="true">
+  <h1>列印記憶.txt</h1>
+  <button id="refresh">重新整理</button>
+  <button id="copy">複製</button>
+  <button id="download" class="primary">下載 TXT</button>
+</header>
+<main>
+  <div id="source" class="source" role="status">讀取中…</div>
+  <p class="note">只記錄日期、病房、床號、病歷號；空床只記病房、床號。不含姓名、生日。要修改請用記事本開啟資料夾中的檔案，存檔後回標籤工具即套用。</p>
+  <pre id="text"></pre>
+</main>
+</div><script type="module" src="../managed-launch.js"></script></body></html>

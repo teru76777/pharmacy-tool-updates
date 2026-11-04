@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "藥車標籤列印（HIS 擴充）",
-  "version": "2.9.1",
+  "version": "2.10.0",
   "description": "在 HIS 查詢處理頁面一鍵帶入病人清單，轉成 A4 藥車標籤（65 格）預覽與列印。資料只在本機處理。",
   "permissions": [
     "storage",
